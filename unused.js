@@ -21,15 +21,36 @@ const getDirectories = async (source) => {
         const fileData = fs.readFileSync(path, "utf-8");
         const codeLines = fileData.split("\n");
         codeLines
-          .filter((line) => line.includes("import"))
+          .filter((line) => line.includes("import") || line.includes("require"))
           .forEach((statement) => {
-            if (statement.includes("from") && !statement.includes("//")) {
+            if (statement.trim().substring(0, 2) === "//") {
+              return;
+            }
+
+            if (statement.includes("from")) {
               let packageName = statement.split("from")[1];
               if (!packageName.trim().includes(".")) {
                 packageName = packageName
                   .replace('"', "")
                   .replace('"', "")
                   .replace(";", "")
+                  .trim();
+
+                if (!packagesInFiles.includes(packageName)) {
+                  packagesInFiles.push(packageName);
+                }
+              }
+            }
+
+            if (statement.includes("require(")) {
+              let packageName = statement.split("require")[1];
+              if (!packageName.trim().includes(".")) {
+                packageName = packageName
+                  .replace("(", "")
+                  .replace(")", "")
+                  .replace(";", "")
+                  .replace('"', "")
+                  .replace('"', "")
                   .trim();
 
                 if (!packagesInFiles.includes(packageName)) {
@@ -47,9 +68,10 @@ const getDirectories = async (source) => {
   await getDirectories(config.entry[0]);
   const packageJsonDeps = Object.keys(package.dependencies);
   const unusedPackages = [];
+
   packageJsonDeps.forEach((package) => {
     const isUsed = packagesInFiles.some((packageInFile) =>
-      packageInFile.includes(package)
+      packageInFile.startsWith(package.trim())
     );
 
     if (!isUsed) {
@@ -58,7 +80,9 @@ const getDirectories = async (source) => {
   });
 
   console.warn(
-    `You "might" not be using following packages: ${unusedPackages.join(", ")}`
+    `Some of the packages listed below could be devDependencies or you might not be using some packages or there is legitimate usecase for some of packages. \n 1) if a package is devDependency then install it as devDependency \n 2) if there is usecase for some of the packages then ignore the warning \n 3) if you are not using any of the listed below packages in any which way  then consider uninstalling those. \n \n Packages: \n ${unusedPackages.join(
+      ",\n "
+    )}`
   );
 
   //console.log(packagesInFiles);
