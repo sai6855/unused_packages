@@ -70,6 +70,10 @@ const getDirectories = async (source) => {
 
 (async () => {
   const entries = config.entry;
+  if (entries.length === 0) {
+    console.error("entry in unused.config.json cannot be empty");
+    return;
+  }
   for (const entry of entries) {
     await getDirectories(entry);
   }
