@@ -4,13 +4,13 @@ const fs = require("fs");
 
 const packagesInFiles = [];
 
-const getDirectories = async (source) => {
+const traverseDirectories = async (source) => {
   const data = await fs.promises.readdir(source, { withFileTypes: true });
 
   for (let i = 0; i < data.length; i++) {
     const file = data[i];
     if (file.isDirectory()) {
-      await getDirectories(`${source}/${file.name}`);
+      await traverseDirectories(`${source}/${file.name}`);
     } else {
       if (
         config.extensions.some((extension) =>
@@ -75,7 +75,7 @@ const getDirectories = async (source) => {
     return;
   }
   for (const entry of entries) {
-    await getDirectories(entry);
+    await traverseDirectories(entry);
   }
   const packageJsonDeps = Object.keys(package.dependencies);
   const unusedPackages = [];
