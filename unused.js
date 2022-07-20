@@ -34,6 +34,8 @@ const getDirectories = async (source) => {
                   .replace('"', "")
                   .replace('"', "")
                   .replace(";", "")
+                  .replace("'", "")
+                  .replace("'", "")
                   .trim();
 
                 if (!packagesInFiles.includes(packageName)) {
@@ -51,6 +53,8 @@ const getDirectories = async (source) => {
                   .replace(";", "")
                   .replace('"', "")
                   .replace('"', "")
+                  .replace("'", "")
+                  .replace("'", "")
                   .trim();
 
                 if (!packagesInFiles.includes(packageName)) {
@@ -65,7 +69,10 @@ const getDirectories = async (source) => {
 };
 
 (async () => {
-  await getDirectories(config.entry[0]);
+  const entries = config.entry;
+  for (const entry of entries) {
+    await getDirectories(entry);
+  }
   const packageJsonDeps = Object.keys(package.dependencies);
   const unusedPackages = [];
 
