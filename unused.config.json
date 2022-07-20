@@ -1,3 +1,4 @@
 {
-  "entry": ["src"]
+  "entry": ["src"],
+  "extensions": ["js", "jsx", "ts", "tsx"]
 }

@@ -13,7 +13,7 @@ const getDirectories = async (source) => {
       await getDirectories(`${source}/${file.name}`);
     } else {
       if (
-        ["js", "jsx", "ts", "tsx"].some((extension) =>
+        config.extensions.some((extension) =>
           file.name.trim().endsWith(extension)
         )
       ) {
