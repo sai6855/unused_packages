@@ -1,5 +1,5 @@
-const package = require("./package.json");
-const config = require("./unused.config.json");
+const package = require("../../package.json");
+const config = require("../../unused.config.json");
 const fs = require("fs");
 
 const packagesInFiles = [];
@@ -17,7 +17,7 @@ const traverseDirectories = async (source) => {
           file.name.trim().endsWith(extension)
         )
       ) {
-        const path = `./${source}/${file.name}`;
+        const path = `../../${source}/${file.name}`;
         const fileData = fs.readFileSync(path, "utf-8");
         const codeLines = fileData.split("\n");
         codeLines
