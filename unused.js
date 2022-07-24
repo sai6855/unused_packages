@@ -1,6 +1,17 @@
-const package = require("../../package.json");
-const config = require("../../unused.config.json");
+const directories = __dirname.split("/");
+const nodeModulesIndex = directories.findIndex((dir) => dir === "node_modules");
+const startingPath =
+  nodeModulesIndex === -1
+    ? __dirname
+    : directories
+        .map((dir, i) => (i >= nodeModulesIndex ? undefined : dir))
+        .filter(Boolean)
+        .join("/");
+
+const package = require(`${startingPath}/package.json`);
 const fs = require("fs");
+
+const extensions = ["js", "jsx", "ts", "tsx", "cjs", "mjs"];
 
 const packagesInFiles = [];
 
@@ -13,11 +24,9 @@ const traverseDirectories = async (source) => {
       await traverseDirectories(`${source}/${file.name}`);
     } else {
       if (
-        config.extensions.some((extension) =>
-          file.name.trim().endsWith(extension)
-        )
+        extensions.some((extension) => file.name.trim().endsWith(extension))
       ) {
-        const path = `../../${source}/${file.name}`;
+        const path = `${startingPath}/${source}/${file.name}`;
         const fileData = fs.readFileSync(path, "utf-8");
         const codeLines = fileData.split("\n");
         codeLines
@@ -68,8 +77,7 @@ const traverseDirectories = async (source) => {
   }
 };
 
-(async () => {
-  const entries = config.entry;
+const findUnUsedPackages = async ({ entries = [] }) => {
   if (entries.length === 0) {
     console.error("entry in unused.config.json cannot be empty");
     return;
@@ -90,11 +98,13 @@ const traverseDirectories = async (source) => {
     }
   });
 
-  console.warn(
-    `Some of the packages listed below could be devDependencies or you might not be using some packages or there is legitimate usecase for some of packages. \n 1) if a package is devDependency then install it as devDependency \n 2) if there is usecase for some of the packages then ignore the warning \n 3) if you are not using any of the listed below packages in any which way  then consider uninstalling those. \n \n Packages: \n ${unusedPackages.join(
-      ",\n "
-    )}`
-  );
+  return unusedPackages;
 
-  //console.log(packagesInFiles);
-})();
+  // console.warn(
+  //   `Some of the packages listed below could be devDependencies or you might not be using some packages or there is legitimate usecase for some of packages. \n 1) if a package is devDependency then install it as devDependency \n 2) if there is usecase for some of the packages then ignore the warning \n 3) if you are not using any of the listed below packages in any which way  then consider uninstalling those. \n \n Packages: \n ${unusedPackages.join(
+  //     ",\n "
+  //   )}`
+  // );
+};
+
+module.exports = findUnUsedPackages;
