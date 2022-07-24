@@ -1,4 +1,0 @@
-{
-  "entry": ["src"],
-  "extensions": ["js", "jsx", "ts", "tsx"]
-}

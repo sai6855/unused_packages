@@ -1,18 +1,11 @@
 {
-  "name": "unused-packages",
-  "version": "1.0.0",
+  "name": "packages-check",
+  "version": "1.0.5",
   "description": "",
   "main": "unused.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "sai6855",
-  "license": "ISC",
-  "dependencies": {
-    "atob": "^2.1.2",
-    "pako": "^2.0.4"
-  },
-  "bin":{
-    "unused-packages":"create-config.js"
-  }
+  "license": "ISC"
 }
